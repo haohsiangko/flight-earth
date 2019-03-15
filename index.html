@@ -6,14 +6,40 @@
       font-family: "Helvetica Neue", sans-serif;
       margin: 0;
     }
+        svg{
+/*            background-color: #333*/
+        }
     </style>
   </head>
   <body>
+   
+   <select name="" id="weekday" onChange="renew()">
+       <option value="1">MON</option>
+       <option value="2">TUE</option>
+       <option value="3">WED</option>
+       <option value="4">THU</option>
+       <option value="5">FRI</option>
+       <option value="6">SAT</option>
+       <option value="7">SUN</option>
+   </select>
+   
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://d3js.org/topojson.v1.min.js"></script>
     <script>
 
 
+renew();
+
+
+
+
+
+
+    
+
+
+   
+    
 
 var link = {type: "LineString", 
             coordinates: [[103.98362,1.346706], [-74.175217,40.689514]]}; // Change these data to see ho the great circle reacts
@@ -48,6 +74,7 @@ var link = {type: "LineString",
     var graticule = d3.geoGraticule()
         .step([15, 15]);
 
+
     g.append("circle").attr("class", "bgCircle").attr("cx", width/2).attr("cy", height/2).attr("r", width/4.1).style("fill", "#eee");
 
     g.append("path")
@@ -57,9 +84,14 @@ var link = {type: "LineString",
         .style("fill", "rgba(0,0,0,0)")
         .style("stroke", "#ccc");
 
+g.append("rect").attr("class", "container").attr("x",width/2-width/4.1).attr("y", height/2-width/4.1).attr("width", width/4.1*2).attr("height",width/4.1*2).style("stroke", "#111").style("fill","rgba(0,0,0,0)");
 
 
-   
+
+
+
+ 
+
 
 
 
@@ -127,6 +159,8 @@ var link = {type: "LineString",
 
 
 
+  
+   
 
 
     function dragged(d){
@@ -163,7 +197,7 @@ var link = {type: "LineString",
 
 
 
-
+ 
 
 
 
@@ -199,10 +233,6 @@ function draw(inputData){
                             return  gdistance > 1.57 ? 'rgba(0,0,256,0)' : 'red';
                         }
         
-                        
-                        
-                        
-                         
                      }
                            
                            );
@@ -248,27 +278,33 @@ function draw(inputData){
 }
 
      
+    var s1 = document.getElementById('weekday');
+    var selected_num = s1.options[s1.selectedIndex].value;
 
 
 
 
 
-
-
-
+    
 //餵入csv
 var points2=[];
 
 
+d3.csv("flights/rank1_clean_weekday.csv", function(data){
 
-
-d3.csv("https://haohsiangko.github.io/flight-earth/flights/rank1_clean.csv", function(data){
+//d3.csv("https://haohsiangko.github.io/flight-earth/flights/rank1_clean.csv", function(data){
     console.log(data); //所有的數據
+//    var s1 = document.getElementById('weekday');
+//    var selected_num = +s1.options[s1.selectedIndex].value;
+//    
     
     
-    for(var i=0; i<data.length; i++){
+    var fData = data.filter(function(d){return d.weekday===selected_num;});
+    
+    
+    for(var i=0; i<fData.length; i++){
 //        points2.push(data[i].Position.split(",").map(Number), data[i].direction); //原本進來長 "120,23.5" 變成 ["120", "23.5"]
-        points2.push(data[i].Position.split(",")); //原本進來長 "120,23.5" 變成 ["120", "23.5"]
+        points2.push(fData[i].Position.split(",")); //原本進來長 "120,23.5" 變成 ["120", "23.5"]
 
     }
 //
@@ -284,6 +320,51 @@ d3.csv("https://haohsiangko.github.io/flight-earth/flights/rank1_clean.csv", fun
 //console.log(points2);//會是空的
 
 
+
+
+    function renew(){
+        
+     d3.selectAll(".mypoints").remove();
+        var s1 = document.getElementById('weekday');
+    var selected_num = s1.options[s1.selectedIndex].value;
+    console.log(selected_num);
+
+              //餵入csv
+        var points2=[];
+
+
+        d3.csv("flights/rank1_clean_weekday.csv", function(data){
+
+        //d3.csv("https://haohsiangko.github.io/flight-earth/flights/rank1_clean.csv", function(data){
+            console.log(data); //所有的數據
+        //    var s1 = document.getElementById('weekday');
+        //    var selected_num = +s1.options[s1.selectedIndex].value;
+        //    
+
+
+            var fData = data.filter(function(d){return d.weekday===selected_num;});
+
+
+            for(var i=0; i<fData.length; i++){
+        //        points2.push(data[i].Position.split(",").map(Number), data[i].direction); //原本進來長 "120,23.5" 變成 ["120", "23.5"]
+                points2.push(fData[i].Position.split(",")); //原本進來長 "120,23.5" 變成 ["120", "23.5"]
+
+            }
+        //
+        //    
+            console.log(points2);
+        //    
+            draw(points2);
+
+        });
+            }
+
+    
+    
+
+
+
+   
 
 
 
